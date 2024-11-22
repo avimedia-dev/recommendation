@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -123,17 +123,18 @@ all_products = [' asparagus',
  'yams',
  'yogurt cake',
  'zucchini']
-association_rules = {
-    'milk': ['bread', 'butter'],
-    'bread': ['butter', 'eggs'],
-    'butter': ['bread', 'milk'],
-    'eggs': ['cheese'],
-    'cheese': ['milk']
-}
-
+association_rules = {'cottage cheese': [], 'muffins': [], 'french fries': ['chocolate', 'eggs'], 'antioxydant juice': [], 'mashed potato': [], 'blueberries': [], 'milk': ['chocolate', 'eggs', 'mineral water', 'spaghetti'], 'red wine': [], 'body spray': [], 'escalope': [], 'olive oil': [], 'almonds': [], 'asparagus': [], 'energy bar': [], 'dessert wine': [], 'burger sauce': [], 'low fat yogurt': [], 'carrots': [], 'pepper': [], 'ham': [], 'hot dogs': [], 'clothes accessories': [], 'fromage blanc': [], 'herb & pepper': [], 'green tea': [], 'ketchup': [], 'white wine': [], 'mayonnaise': [], 'corn': [], 'babies food': [], 'grated cheese': [], 'butter': [], 'french wine': [], 'melons': [], 'spaghetti': ['chocolate', 'eggs', 'ground beef', 'milk', 'mineral water'], 'frozen vegetables': ['mineral water'], 'avocado': [], 'bramble': [], 'fresh bread': [], 'whole wheat pasta': [], 'salt': [], 'salad': [], 'parmesan cheese': [], 'spinach': [], 'chocolate bread': [], 'green grapes': [], 'magazines': [], 'burgers': [], 'eggs': ['chocolate', 'french fries', 'milk', 'mineral water', 'spaghetti'], 'light mayo': [], 'rice': [], 'honey': [], 'champagne': [], 'cider': [], 'shrimp': [], 'eggplant': [], 'strong cheese': [], 'cookies': [], 'bug spray': [], 'chili': [], 'green beans': [], 'oil': [], 'salmon': [], 'strawberries': [], 'oatmeal': [], 'pasta': [], 'shallot': [], 'gums': [], ' asparagus': [], 'nonfat milk': [], 'yogurt cake': [], 'protein bar': [], 'soda': [], 'brownies': [], 'chutney': [], 'ground beef': ['mineral water', 'spaghetti'], 'water spray': [], 'napkins': [], 'shampoo': [], 'cream': [], 'candy bars': [], 'energy drink': [], 'tomato juice': [], 'gluten free bar': [], 'cooking oil': [], 'zucchini': [], 'tea': [], 'yams': [], 'pickles': [], 'black tea': [], 'soup': [], 'whole wheat rice': [], 'pancakes': ['mineral water'], 'frozen smoothie': [], 'turkey': [], 'hand protein bar': [], 'bacon': [], 'mint green tea': [], 'whole weat flour': [], 'extra dark chocolate': [], 'mint': [], 'vegetables mix': [], 'chocolate': ['eggs', 'french fries', 'milk', 'mineral water', 'spaghetti'], 'mushroom cream sauce': [], 'pet food': [], 'sparkling water': [], 'cereals': [], 'light cream': [], 'barbecue sauce': [], 'flax seed': [], 'toothpaste': [], 'mineral water': ['chocolate', 'eggs', 'frozen vegetables', 'ground beef', 'milk', 'pancakes', 'spaghetti'], 'tomatoes': [], 'meatballs': [], 'cauliflower': [], 'tomato sauce': [], 'sandwich': [], 'fresh tuna': [], 'chicken': [], 'cake': []}
 @app.route('/')
 def main_page():
-    return render_template('index.html', products=all_products)
+    show_with_recommendations = request.args.get('filter', 'false').lower() == 'true'
+
+    if show_with_recommendations:
+        products = [product for product in all_products if association_rules.get(product, [])]
+    else:
+        products = all_products
+
+    return render_template('index.html', products=products, show_with_recommendations=show_with_recommendations)
+
 
 @app.route('/product/<product>')
 def product_page(product):
